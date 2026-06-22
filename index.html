@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UniInterview · Self-Practice</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com">
+    </script>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <!-- Google Font (Inter) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet" />
+    <style>
+        * {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        body {
+            background: #f8fafc;
+        }
+        .transition-screen {
+            transition: opacity 0.30s ease, transform 0.30s ease;
+        }
+        .screen-hidden {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+        }
+        .screen-visible {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .btn-shadow {
+            box-shadow: 0 4px 10px rgba(30, 64, 175, 0.20);
+        }
+        .card-shadow {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+        /* voice toggle pill */
+        .voice-pill {
+            transition: all 0.2s ease;
+        }
+        .voice-pill.active {
+            background: #1e40af;
+            color: #fff;
+        }
+        .recording-pulse {
+            animation: pulse 1s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%,
+            100% {
+                box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(239, 68, 68, 0);
+            }
+        }
+        /* scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #e2e8f0;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #94a3b8;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #64748b;
+        }
+        .fade-in {
+            animation: fadeIn 0.35s ease forwards;
+        }
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-start p-4 md:p-8 bg-slate-50 text-slate-800">
+
+    <!-- ====== MAIN CONTAINER ====== -->
+    <div id="app" class="w-full max-w-4xl mx-auto">
+
+        <!-- ====== TOP BAR ====== -->
+        <header class="flex items-center justify-between mb-6">
+            <div class="flex items-center gap-3">
+                <span class="text-2xl">🎓</span>
+                <h1 class="text-xl md:text-2xl font-bold text-slate-800 tracking-tight">UniInterview</h1>
+                <span class="text-xs font-medium text-slate-400 bg-slate-100 px-2 py-0.5 rounded-full">self-practice</span>
+            </div>
+            <button id="teacherLoginBtn" class="text-sm text-slate-500 hover:text-slate-700 bg-white border border-slate-200 hover:border-slate-300 px-4 py-1.5 rounded-full transition flex items-center gap-1.5">
+                <i class="fas fa-chalkboard-teacher text-xs"></i> Teacher
+            </button>
+        </header>
+
+        <!-- ====== FLASH MESSAGE ====== -->
+        <div id="flashMsg" class="mb-4 text-sm font-medium px-4 py-2 rounded-lg hidden transition-all"></div>
+
+        <!-- ============================================================ -->
+        <!-- SCREEN 1 — WELCOME (Student)                                -->
+        <!-- ============================================================ -->
+        <div id="screenWelcome" class="screen-visible transition-screen">
+            <div class="bg-white rounded-2xl card-shadow p-6 md:p-10 fade-in">
+                <div class="text-center mb-8">
+                    <span class="text-5xl block mb-3">🎤</span>
+                    <h2 class="text-2xl md:text-3xl font-bold text-slate-800">Interview Practice</h2>
+                    <p class="text-slate-500 mt-2 text-sm md:text-base">Simulate a real university entrance interview. Get AI feedback instantly.</p>
+                </div>
+
+                <div class="max-w-md mx-auto space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Your Name</label>
+                        <input id="studentName" type="text" placeholder="e.g. Wei Ling" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 transition" />
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-1">Student ID</label>
+                        <input id="studentId" type="text" placeholder="e.g. S1234567" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 transition" />
+                    </div>
+                    <button id="startBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3.5 rounded-xl btn-shadow transition flex items-center justify-center gap-2 mt-2">
+                        <i class="fas fa-arrow-right"></i> Begin Practice
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400 text-center mt-6">Your data stays private on this device.</p>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SCREEN 2 — CHOOSE QUESTION TYPE                             -->
+        <!-- ============================================================ -->
+        <div id="screenChoose" class="screen-hidden transition-screen">
+            <div class="bg-white rounded-2xl card-shadow p-6 md:p-10 fade-in">
+                <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold text-slate-800">Choose a topic</h2>
+                    <p class="text-slate-500 text-sm">Pick the type of questions you want to practice.</p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-5 max-w-2xl mx-auto">
+                    <!-- General Card -->
+                    <button id="chooseGeneral" class="group bg-slate-50 hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300 rounded-2xl p-6 text-left transition-all duration-200">
+                        <span class="text-3xl block mb-3">🧑‍🎓</span>
+                        <h3 class="text-lg font-semibold text-slate-800 group-hover:text-blue-700">General Questions</h3>
+                        <p class="text-sm text-slate-500 mt-1">School life, interests, society &amp; personal views.</p>
+                    </button>
+                    <!-- Specific Card -->
+                    <button id="chooseSpecific" class="group bg-slate-50 hover:bg-blue-50 border-2 border-slate-200 hover:border-blue-300 rounded-2xl p-6 text-left transition-all duration-200">
+                        <span class="text-3xl block mb-3">🔬</span>
+                        <h3 class="text-lg font-semibold text-slate-800 group-hover:text-blue-700">Specific Questions</h3>
+                        <p class="text-sm text-slate-500 mt-1">Majors, future prospects &amp; academic focus.</p>
+                    </button>
+                </div>
+                <div class="text-center mt-6">
+                    <button id="backFromChoose" class="text-sm text-slate-400 hover:text-slate-600 transition flex items-center justify-center gap-1 mx-auto">
+                        <i class="fas fa-chevron-left text-xs"></i> Back
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SCREEN 3 — INTERVIEW SESSION                                -->
+        <!-- ============================================================ -->
+        <div id="screenSession" class="screen-hidden transition-screen">
+            <div class="bg-white rounded-2xl card-shadow p-6 md:p-10 fade-in">
+                <!-- progress / meta -->
+                <div class="flex items-center justify-between text-xs text-slate-400 mb-4">
+                    <span id="sessionTypeLabel" class="bg-slate-100 px-3 py-1 rounded-full font-medium">General</span>
+                    <span id="sessionCounter" class="font-mono">1 / 1</span>
+                </div>
+
+                <!-- Question Display -->
+                <div class="bg-slate-50 rounded-xl p-5 mb-5 border border-slate-100">
+                    <p class="text-xs text-slate-400 uppercase tracking-wide mb-1">Question</p>
+                    <p id="questionEnglish" class="text-lg md:text-xl font-semibold text-slate-800 leading-relaxed">Loading…</p>
+                    <p id="questionChinese" class="text-sm text-slate-500 mt-2 italic">Loading…</p>
+                    <p id="questionTag" class="text-xs text-blue-600 mt-2 font-medium">tag</p>
+                </div>
+
+                <!-- Audio Controls -->
+                <div class="flex flex-wrap items-center gap-3 mb-5">
+                    <button id="playQuestionBtn" class="bg-blue-100 hover:bg-blue-200 text-blue-700 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                        <i class="fas fa-volume-up"></i> Read Aloud
+                    </button>
+                    <span class="text-xs text-slate-400">|</span>
+                    <span class="text-xs text-slate-500">Voice:</span>
+                    <button id="voiceMaleBtn" class="voice-pill active px-3 py-1 rounded-full text-xs font-medium bg-blue-700 text-white border border-blue-200">Male</button>
+                    <button id="voiceFemaleBtn" class="voice-pill px-3 py-1 rounded-full text-xs font-medium bg-slate-100 text-slate-600 border border-slate-200">Female</button>
+                </div>
+
+                <!-- Response Area -->
+                <div class="mb-5">
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="text-sm font-medium text-slate-700">Your Answer</label>
+                        <div class="flex gap-2">
+                            <button id="modeKeywords" class="text-xs px-3 py-1.5 rounded-lg bg-blue-700 text-white font-medium transition">✏️ Keywords</button>
+                            <button id="modeVoice" class="text-xs px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 font-medium transition">🎤 Voice</button>
+                        </div>
+                    </div>
+
+                    <!-- Keywords textarea -->
+                    <textarea id="answerTextarea" rows="4" placeholder="Type your bullet points or key ideas here…" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition resize-y"></textarea>
+
+                    <!-- Voice input area (hidden by default) -->
+                    <div id="voiceInputArea" class="hidden">
+                        <div class="flex items-center gap-3 mb-2">
+                            <button id="startRecordingBtn" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
+                                <i class="fas fa-microphone"></i> <span id="recordBtnLabel">Start Recording</span>
+                            </button>
+                            <span id="recordingStatus" class="text-xs text-slate-400">Not recording</span>
+                        </div>
+                        <textarea id="voiceTranscript" rows="4" placeholder="Your speech will appear here…" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30 transition resize-y bg-slate-50" readonly></textarea>
+                        <p class="text-xs text-slate-400 mt-1"><i class="fas fa-info-circle"></i> Speak clearly in English. (Chrome / Edge recommended)</p>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <div class="flex items-center gap-3">
+                    <button id="submitAnswerBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-6 py-3 rounded-xl btn-shadow transition flex items-center gap-2">
+                        <i class="fas fa-paper-plane"></i> Submit Answer
+                    </button>
+                    <button id="nextQuestionBtn" class="text-sm text-slate-400 hover:text-slate-600 transition flex items-center gap-1 disabled:opacity-30 disabled:cursor-not-allowed" disabled>
+                        <i class="fas fa-forward"></i> Next
+                    </button>
+                </div>
+
+                <!-- back during session -->
+                <div class="mt-5 pt-4 border-t border-slate-100">
+                    <button id="backFromSession" class="text-xs text-slate-400 hover:text-slate-600 transition flex items-center gap-1">
+                        <i class="fas fa-chevron-left"></i> Back to topics
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SCREEN 4 — FEEDBACK (after submission)                      -->
+        <!-- ============================================================ -->
+        <div id="screenFeedback" class="screen-hidden transition-screen">
+            <div class="bg-white rounded-2xl card-shadow p-6 md:p-10 fade-in">
+
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-robot text-blue-600"></i> Interviewer Feedback
+                    </h2>
+                    <span class="text-xs bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full font-medium">AI generated</span>
+                </div>
+
+                <!-- Loading state -->
+                <div id="feedbackLoading" class="flex flex-col items-center justify-center py-12">
+                    <div class="spinner mb-4" style="border-top-color:#1e40af;"></div>
+                    <p class="text-sm text-slate-500">Analyzing your response…</p>
+                </div>
+
+                <!-- Feedback content (hidden until loaded) -->
+                <div id="feedbackContent" class="hidden space-y-5">
+                    <!-- Evaluation -->
+                    <div class="bg-slate-50 rounded-xl p-4 border-l-4 border-blue-500">
+                        <p class="text-xs text-slate-400 uppercase tracking-wide mb-1">Interviewer's Evaluation</p>
+                        <p id="feedbackEvaluation" class="text-sm leading-relaxed text-slate-700"></p>
+                    </div>
+                    <!-- Areas for Improvement -->
+                    <div class="bg-slate-50 rounded-xl p-4 border-l-4 border-amber-400">
+                        <p class="text-xs text-slate-400 uppercase tracking-wide mb-1">Areas for Improvement</p>
+                        <p id="feedbackImprovement" class="text-sm leading-relaxed text-slate-700"></p>
+                    </div>
+                    <!-- Sample Modified Answer + TTS -->
+                    <div class="bg-blue-50/50 rounded-xl p-4 border border-blue-100">
+                        <div class="flex items-center justify-between mb-2">
+                            <p class="text-xs text-slate-400 uppercase tracking-wide">Sample Modified Answer</p>
+                            <div class="flex items-center gap-2">
+                                <button id="playSampleBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
+                                    <i class="fas fa-play"></i> Listen
+                                </button>
+                                <button id="stopSampleBtn" class="bg-slate-200 hover:bg-slate-300 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-medium transition flex items-center gap-1.5">
+                                    <i class="fas fa-stop"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <p id="feedbackSample" class="text-sm leading-relaxed text-slate-800 font-medium"></p>
+                    </div>
+
+                    <!-- Logged confirmation -->
+                    <div id="logConfirm" class="text-xs text-emerald-600 flex items-center gap-1.5 hidden">
+                        <i class="fas fa-check-circle"></i> Response logged.
+                    </div>
+
+                    <div class="flex flex-wrap gap-3 pt-2">
+                        <button id="feedbackRetryBtn" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-5 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-2">
+                            <i class="fas fa-redo"></i> Try Same Question
+                        </button>
+                        <button id="feedbackNextBtn" class="bg-blue-700 hover:bg-blue-800 text-white px-5 py-2.5 rounded-xl text-sm font-medium transition flex items-center gap-2">
+                            <i class="fas fa-arrow-right"></i> Next Question
+                        </button>
+                        <button id="feedbackBackTopics" class="text-sm text-slate-400 hover:text-slate-600 transition flex items-center gap-1">
+                            <i class="fas fa-chevron-left"></i> Topics
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SCREEN 5 — TEACHER LOGIN                                    -->
+        <!-- ============================================================ -->
+        <div id="screenTeacherLogin" class="screen-hidden transition-screen">
+            <div class="max-w-sm mx-auto bg-white rounded-2xl card-shadow p-6 md:p-8 fade-in">
+                <div class="text-center mb-6">
+                    <span class="text-4xl block mb-2">🔐</span>
+                    <h2 class="text-xl font-bold text-slate-800">Teacher Access</h2>
+                    <p class="text-sm text-slate-500 mt-1">Enter the admin password.</p>
+                </div>
+                <div class="space-y-4">
+                    <input id="adminPassword" type="password" placeholder="Password" class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/40 focus:border-blue-400 transition" />
+                    <button id="adminLoginBtn" class="w-full bg-blue-700 hover:bg-blue-800 text-white font-semibold py-3 rounded-xl btn-shadow transition flex items-center justify-center gap-2">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    <button id="backFromTeacherLogin" class="w-full text-sm text-slate-400 hover:text-slate-600 transition flex items-center justify-center gap-1">
+                        <i class="fas fa-chevron-left text-xs"></i> Back
+                    </button>
+                </div>
+                <p class="text-xs text-slate-400 text-center mt-4">Default password: <code class="bg-slate-100 px-1.5 py-0.5 rounded text-xs">Admin123</code></p>
+            </div>
+        </div>
+
+        <!-- ============================================================ -->
+        <!-- SCREEN 6 — TEACHER DASHBOARD                                -->
+        <!-- ============================================================ -->
+        <div id="screenTeacherDashboard" class="screen-hidden transition-screen">
+            <div class="bg-white rounded-2xl card-shadow p-6 md:p-10 fade-in">
+                <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+                    <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
+                        <i class="fas fa-chalkboard-teacher text-blue-600"></i> Question Bank Manager
+                    </h2>
+                    <button id="adminLogoutBtn" class="text-sm text-slate-400 hover:text-red-500 transition flex items-center gap-1">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+
+                <!-- API Key -->
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+                    <label class="text-xs font-medium text-amber-800 uppercase tracking-wide">Gemini API Key</label>
+                    <div class="flex gap-2 mt-1">
+                        <input id="apiKeyInput" type="password" placeholder="Paste your API key here" class="flex-1 border border-amber-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-amber-400/40 bg-white" />
+                        <button id="saveApiKeyBtn" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition">Save</button>
+                    </div>
+                    <p class="text-xs text-amber-600 mt-1.5"><i class="fas fa-info-circle"></i> Key is stored locally. Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank" class="underline">Google AI Studio</a>.</p>
+                </div>
+
+                <!-- Tabs -->
+                <div class="flex gap-4 border-b border-slate-200 mb-4">
+                    <button id="tabGeneral" class="tab-btn pb-2 text-sm font-medium text-blue-700 border-b-2 border-blue-700 transition">General</button>
+                    <button id="tabSpecific" class="tab-btn pb-2 text-sm font-medium text-slate-500 hover:text-slate-700 transition">Specific</button>
+                </div>
+
+                <!-- Question list container -->
+                <div id="questionList" class="space-y-3 mb-5 max-h-80 overflow-y-auto pr-1">
+                    <!-- rendered by JS -->
+                </div>
+
+                <!-- Add new question form -->
+                <div class="border-t border-slate-100 pt-5 mt-2">
+                    <h4 class="text-sm font-semibold text-slate-700 mb-3">+ Add New Question</h4>
+                    <div class="grid md:grid-cols-3 gap-3">
+                        <input id="newEnglish" placeholder="English text" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" />
+                        <input id="newChinese" placeholder="中文翻译" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" />
+                        <input id="newTag" placeholder="Tag (e.g. majors)" class="border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/30" />
+                    </div>
+                    <button id="addQuestionBtn" class="mt-3 bg-blue-700 hover:bg-blue-800 text-white text-sm font-medium px-5 py-2.5 rounded-lg transition flex items-center gap-2">
+                        <i class="fas fa-plus"></i> Add Question
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- ====== END APP ====== -->
+
+    <!-- ====== FOOTER ====== -->
+    <footer class="mt-10 text-center text-xs text-slate-400 pb-6">
+        UniInterview Self-Practice &middot; Built for students &amp; teachers
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- JAVASCRIPT — ALL LOGIC                                       -->
+    <!-- ============================================================ -->
+    <script>
+        (function() {
+            'use strict';
+
+            // =============================================================
+            // 1.  DATA — DEFAULT QUESTION BANKS
+            // =============================================================
+            const DEFAULT_GENERAL = [
+                { id: 'g1', english: 'Tell me about a time you worked effectively in a team.', chinese: '请讲述一次你有效团队合作的经历。',
+                    tag: 'school life' },
+                { id: 'g2', english: 'What social issue matters most to you and why?', chinese: '哪个社会问题对你最重要，为什么？',
+                    tag: 'society' },
+                { id: 'g3', english: 'Describe a hobby that has shaped who you are.', chinese: '描述一项塑造了你性格的爱好。',
+                    tag: 'interests' },
+            ];
+            const DEFAULT_SPECIFIC = [
+                { id: 's1', english: 'Why did you choose your intended major?', chinese: '你为什么选择你心仪的专业？',
+                    tag: 'majors' },
+                { id: 's2', english: 'Where do you see your career in 10 years?', chinese: '你预见自己十年后的职业生涯是怎样的？',
+                    tag: 'future prospects' },
+                { id: 's3', english: 'How does this university align with your academic goals?', chinese: '这所大学如何与你的学术目标契合？',
+                    tag: 'majors' },
+            ];
+
+            // =============================================================
+            // 2.  STATE
+            // =============================================================
+            let state = {
+                studentName: '',
+                studentId: '',
+                questionType: 'general', // 'general' | 'specific'
+                currentQuestion: null,
+                sessionHistory: [], // questions seen this session
+                usedIds: [], // ids used in this session
+                feedbackData: null,
+                isRecording: false,
+                recognition: null,
+                selectedVoiceGender: 'male', // 'male' | 'female'
+                isAdmin: false,
+            };
+
+            // =============================================================
+            // 3.  DOM REFS
+            // =============================================================
+            const $ = (sel) => document.querySelector(sel);
+            const $$ = (sel) => document.querySelectorAll(sel);
+
+            // screens
+            const scWelcome = $('#screenWelcome');
+            const scChoose = $('#screenChoose');
+            const scSession = $('#screenSession');
+            const scFeedback = $('#screenFeedback');
+            const scTeacherLogin = $('#screenTeacherLogin');
+            const scTeacherDashboard = $('#screenTeacherDashboard');
+
+            // welcome
+            const studentNameInput = $('#studentName');
+            const studentIdInput = $('#studentId');
+            const startBtn = $('#startBtn');
+
+            // choose
+            const chooseGeneral = $('#chooseGeneral');
+            const chooseSpecific = $('#chooseSpecific');
+            const backFromChoose = $('#backFromChoose');
+
+            // session
+            const sessionTypeLabel = $('#sessionTypeLabel');
+            const sessionCounter = $('#sessionCounter');
+            const questionEnglish = $('#questionEnglish');
+            const questionChinese = $('#questionChinese');
+            const questionTag = $('#questionTag');
+            const playQuestionBtn = $('#playQuestionBtn');
+            const voiceMaleBtn = $('#voiceMaleBtn');
+            const voiceFemaleBtn = $('#voiceFemaleBtn');
+            const answerTextarea = $('#answerTextarea');
+            const modeKeywords = $('#modeKeywords');
+            const modeVoice = $('#modeVoice');
+            const voiceInputArea = $('#voiceInputArea');
+            const startRecordingBtn = $('#startRecordingBtn');
+            const recordBtnLabel = $('#recordBtnLabel');
+            const recordingStatus = $('#recordingStatus');
+            const voiceTranscript = $('#voiceTranscript');
+            const submitAnswerBtn = $('#submitAnswerBtn');
+            const nextQuestionBtn = $('#nextQuestionBtn');
+            const backFromSession = $('#backFromSession');
+
+            // feedback
+            const feedbackLoading = $('#feedbackLoading');
+            const feedbackContent = $('#feedbackContent');
+            const feedbackEvaluation = $('#feedbackEvaluation');
+            const feedbackImprovement = $('#feedbackImprovement');
+            const feedbackSample = $('#feedbackSample');
+            const playSampleBtn = $('#playSampleBtn');
+            const stopSampleBtn = $('#stopSampleBtn');
+            const logConfirm = $('#logConfirm');
+            const feedbackRetryBtn = $('#feedbackRetryBtn');
+            const feedbackNextBtn = $('#feedbackNextBtn');
+            const feedbackBackTopics = $('#feedbackBackTopics');
+
+            // teacher login
+            const teacherLoginBtn = $('#teacherLoginBtn');
+            const adminPassword = $('#adminPassword');
+            const adminLoginBtn = $('#adminLoginBtn');
+            const backFromTeacherLogin = $('#backFromTeacherLogin');
+
+            // teacher dashboard
+            const adminLogoutBtn = $('#adminLogoutBtn');
+            const apiKeyInput = $('#apiKeyInput');
+            const saveApiKeyBtn = $('#saveApiKeyBtn');
+            const tabGeneral = $('#tabGeneral');
+            const tabSpecific = $('#tabSpecific');
+            const questionList = $('#questionList');
+            const newEnglish = $('#newEnglish');
+            const newChinese = $('#newChinese');
+            const newTag = $('#newTag');
+            const addQuestionBtn = $('#addQuestionBtn');
+
+            const flashMsg = $('#flashMsg');
+
+            // =============================================================
+            // 4.  HELPERS
+            // =============================================================
+            function showScreen(screen) {
+                [scWelcome, scChoose, scSession, scFeedback, scTeacherLogin, scTeacherDashboard].forEach(s => {
+                    s.classList.add('screen-hidden');
+                    s.classList.remove('screen-visible');
+                });
+                screen.classList.remove('screen-hidden');
+                screen.classList.add('screen-visible');
+                // re-trigger fade
+                screen.querySelector('.fade-in')?.classList.remove('fade-in');
+                void screen.offsetWidth;
+                screen.querySelector('.fade-in')?.classList.add('fade-in');
+            }
+
+            function flash(text, type = 'info') {
+                flashMsg.textContent = text;
+                flashMsg.className = 'mb-4 text-sm font-medium px-4 py-2 rounded-lg transition-all';
+                if (type === 'error') flashMsg.classList.add('bg-red-100', 'text-red-700');
+                else if (type === 'success') flashMsg.classList.add('bg-emerald-100', 'text-emerald-700');
+                else flashMsg.classList.add('bg-blue-100', 'text-blue-700');
+                flashMsg.classList.remove('hidden');
+                setTimeout(() => { flashMsg.classList.add('hidden'); }, 4000);
+            }
+
+            function saveQuestions(type, questions) {
+                const key = 'uniq_questions_' + type;
+                localStorage.setItem(key, JSON.stringify(questions));
+            }
+
+            function loadQuestions(type) {
+                const key = 'uniq_questions_' + type;
+                const stored = localStorage.getItem(key);
+                if (stored) {
+                    try { return JSON.parse(stored); } catch (e) { /* fallback */ }
+                }
+                // default
+                const defaults = type === 'general' ? DEFAULT_GENERAL : DEFAULT_SPECIFIC;
+                saveQuestions(type, defaults);
+                return defaults;
+            }
+
+            function getQuestions(type) {
+                return loadQuestions(type);
+            }
+
+            function setAllQuestions(type, arr) {
+                saveQuestions(type, arr);
+            }
+
+            function getApiKey() {
+                return localStorage.getItem('uniq_gemini_key') || '';
+            }
+
+            function saveApiKey(key) {
+                localStorage.setItem('uniq_gemini_key', key);
+            }
+
+            // generate unique id
+            function genId() { return Date.now().toString(36) + Math.random().toString(36).slice(2, 6); }
+
+            // =============================================================
+            // 5.  SPEECH SYNTHESIS (TTS)
+            // =============================================================
+            let synth = window.speechSynthesis;
+            let currentUtterance = null;
+
+            function getVoices() {
+                return new Promise((resolve) => {
+                    let voices = synth.getVoices();
+                    if (voices.length) { resolve(voices); return; }
+                    synth.onvoiceschanged = () => { resolve(synth.getVoices()); };
+                    setTimeout(() => resolve(synth.getVoices()), 500);
+                });
+            }
+
+            async function speakText(text, gender = 'male', rate = 0.8) {
+                if (!synth) return;
+                if (currentUtterance) { synth.cancel();
+                    currentUtterance = null; }
+                const voices = await getVoices();
+                // prefer en-GB
+                let selected = voices.find(v => v.lang.startsWith('en-GB'));
+                if (!selected) selected = voices.find(v => v.lang.startsWith('en'));
+                if (!selected) selected = voices[0];
+
+                // gender heuristic: try to match by name
+                if (gender === 'female') {
+                    const female = voices.find(v => v.lang.startsWith('en') && /female|woman|girl|zira|samantha/i.test(v.name));
+                    if (female) selected = female;
+                } else {
+                    const male = voices.find(v => v.lang.startsWith('en') && /male|man|boy|david|james|george|daniel|paul/i.test(v
+                        .name));
+                    if (male) selected = male;
+                }
+
+                const utter = new SpeechSynthesisUtterance(text);
+                utter.voice = selected;
+                utter.rate = rate;
+                utter.lang = 'en-GB';
+                currentUtterance = utter;
+                synth.speak(utter);
+                return new Promise((resolve) => {
+                    utter.onend = () => { currentUtterance = null;
+                        resolve(); };
+                    utter.onerror = () => { currentUtterance = null;
+                        resolve(); };
+                });
+            }
+
+            function stopSpeaking() {
+                if (synth && currentUtterance) { synth.cancel();
+                    currentUtterance = null; }
+            }
+
+            // =============================================================
+            // 6.  SPEECH RECOGNITION
+            // =============================================================
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            let recognition = null;
+
+            function initRecognition() {
+                if (!SpeechRecognition) return null;
+                const rec = new SpeechRecognition();
+                rec.continuous = true;
+                rec.interimResults = true;
+                rec.lang = 'en-US';
+                return rec;
+            }
+
+            function startVoiceRecording() {
+                if (!SpeechRecognition) {
+                    flash('Speech recognition is not supported in this browser. Try Chrome or Edge.', 'error');
+                    return;
+                }
+                if (state.isRecording) return;
+                try {
+                    recognition = initRecognition();
+                    if (!recognition) { flash('Speech recognition unavailable.', 'error'); return; }
+                    recognition.continuous = true;
+                    recognition.interimResults = true;
+                    recognition.lang = 'en-US';
+
+                    recognition.onresult = (event) => {
+                        let transcript = '';
+                        for (let i = event.resultIndex; i < event.results.length; i++) {
+                            transcript += event.results[i][0].transcript;
+                        }
+                        voiceTranscript.value = transcript;
+                    };
+                    recognition.onerror = (event) => {
+                        console.warn('Speech recognition error:', event.error);
+                        if (event.error === 'not-allowed') {
+                            flash('Microphone access denied. Please allow microphone permissions.', 'error');
+                        } else if (event.error === 'no-speech') {
+                            // silent, just restart?
+                        } else {
+                            flash('Recognition error: ' + event.error, 'error');
+                        }
+                        stopVoiceRecording();
+                    };
+                    recognition.onend = () => {
+                        // if still recording, restart
+                        if (state.isRecording) {
+                            try { recognition.start(); } catch (e) { /* ignore */ }
+                        }
+                    };
+                    recognition.start();
+                    state.isRecording = true;
+                    recordBtnLabel.textContent = 'Stop Recording';
+                    recordingStatus.textContent = '🎙️ Listening…';
+                    recordingStatus.classList.add('text-red-500');
+                    startRecordingBtn.classList.add('recording-pulse');
+                } catch (e) {
+                    flash('Could not start recording: ' + e.message, 'error');
+                    state.isRecording = false;
+                }
+            }
+
+            function stopVoiceRecording() {
+                if (recognition && state.isRecording) {
+                    try { recognition.stop(); } catch (e) { /* ignore */ }
+                }
+                state.isRecording = false;
+                recordBtnLabel.textContent = 'Start Recording';
+                recordingStatus.textContent = 'Not recording';
+                recordingStatus.classList.remove('text-red-500');
+                startRecordingBtn.classList.remove('recording-pulse');
+            }
+
+            // =============================================================
+            // 7.  QUESTION LOGIC
+            // =============================================================
+            function pickRandomQuestion(type) {
+                const pool = getQuestions(type);
+                const available = pool.filter(q => !state.usedIds.includes(q.id));
+                if (available.length === 0) {
+                    // reset used ids
+                    state.usedIds = [];
+                    return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null;
+                }
+                return available[Math.floor(Math.random() * available.length)];
+            }
+
+            function loadSessionQuestion(type) {
+                const q = pickRandomQuestion(type);
+                if (!q) {
+                    flash('No questions available for this topic.', 'error');
+                    return;
+                }
+                state.currentQuestion = q;
+                state.usedIds.push(q.id);
+                state.sessionHistory.push(q);
+                // display
+                questionEnglish.textContent = q.english;
+                questionChinese.textContent = q.chinese;
+                questionTag.textContent = '🏷️ ' + q.tag;
+                sessionTypeLabel.textContent = type === 'general' ? 'General' : 'Specific';
+                sessionCounter.textContent = state.sessionHistory.length + ' / ' + state.sessionHistory.length;
+                // reset answer fields
+                answerTextarea.value = '';
+                voiceTranscript.value = '';
+                if (state.isRecording) stopVoiceRecording();
+                // enable submit
+                submitAnswerBtn.disabled = false;
+                nextQuestionBtn.disabled = true;
+                // hide feedback
+                feedbackContent.classList.add('hidden');
+                feedbackLoading.classList.remove('hidden');
+                // auto-read?
+                // No auto-read, user clicks button
+            }
+
+            // =============================================================
+            // 8.  AI FEEDBACK (Gemini)
+            // =============================================================
+            async function fetchAIFeedback(question, answer) {
+                const apiKey = getApiKey();
+                if (!apiKey) {
+                    throw new Error('API key not set. Teacher must add a Gemini API key in the dashboard.');
+                }
+                const model = 'gemini-2.0-flash';
+                const url =
+                    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+
+                const systemPrompt = `You are a university admissions interviewer giving feedback in English.
+        Analyze the student's answer and respond in EXACTLY this format with these three sections:
+
+        Interviewer's Evaluation:
+        (2-3 sentences evaluating how well they answered the question.)
+
+        Areas for Improvement:
+        (2-3 sentences with constructive advice on delivery and content.)
+
+        Sample Modified Answer:
+        (A polished, perfected version of their answer in 3-4 sentences.)
+
+        Keep the tone professional, encouraging, and specific.`;
+
+                const payload = {
+                    contents: [{
+                        parts: [{
+                            text: systemPrompt + '\n\nQuestion: ' + question + '\n\nStudent Answer: ' + answer
+                        }]
+                    }]
+                };
+
+                const res = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!res.ok) {
+                    const errText = await res.text();
+                    throw new Error('AI API error: ' + res.status + ' ' + errText);
+                }
+                const data = await res.json();
+                const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+                return parseFeedback(text);
+            }
+
+            function parseFeedback(text) {
+                // extract sections by header
+                let evaluation = '';
+                let improvement = '';
+                let sample = '';
+
+                const evalMatch = text.match(/Interviewer's Evaluation:\s*([\s\S]*?)(?=Areas for Improvement:|$)/i);
+                if (evalMatch) evaluation = evalMatch[1].trim();
+
+                const impMatch = text.match(/Areas for Improvement:\s*([\s\S]*?)(?=Sample Modified Answer:|$)/i);
+                if (impMatch) improvement = impMatch[1].trim();
+
+                const sampMatch = text.match(/Sample Modified Answer:\s*([\s\S]*?)$/i);
+                if (sampMatch) sample = sampMatch[1].trim();
+
+                // fallbacks
+                if (!evaluation && !improvement && !sample) {
+                    // try to use entire response as sample
+                    sample = text.trim();
+                }
+                if (!evaluation) evaluation = 'Your response has been noted. Practice fluency and structure.';
+                if (!improvement) improvement = 'Try to provide more specific examples and organize your thoughts clearly.';
+                if (!sample) sample = 'Consider structuring your answer with a clear introduction, body, and conclusion.';
+
+                return { evaluation, improvement, sample };
+            }
+
+            // =============================================================
+            // 9.  LOG TO GOOGLE SHEETS (stub + comment)
+            // =============================================================
+            /**
+             * LOGGING — Google Sheets Integration
+             * -------------------------------------------------------------
+             * To connect this app to a Google Sheet:
+             *
+             * 1. Create a Google Sheet.
+             * 2. Open Extensions > Apps Script.
+             * 3. Paste the following code and deploy as a Web App
+             *    (Execute as: Me, Access: Anyone):
+             *
+             *    function doPost(e) {
+             *      const sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+             *      const data = JSON.parse(e.postData.contents);
+             *      sheet.appendRow([
+             *        data.timestamp || new Date().toISOString(),
+             *        data.studentName || '',
+             *        data.studentId || '',
+             *        data.questionType || '',
+             *        data.questionText || '',
+             *        data.studentAnswer || '',
+             *        data.aiFeedback || '',
+             *        data.sampleAnswer || ''
+             *      ]);
+             *      return ContentService.createTextOutput(JSON.stringify({success: true}))
+             *        .setMimeType(ContentService.MimeType.JSON);
+             *    }
+             *
+             * 4. Copy the Web App URL and paste it into the logStudentData function below.
+             * 5. By default, the function logs to console so the app works offline.
+             */
+            const GOOGLE_SHEETS_WEBHOOK_URL = ''; // <-- PASTE your Google Apps Script Web App URL here
+
+            async function logStudentData(data) {
+                // Always console.log for local debugging
+                console.log('📋 STUDENT LOG:', data);
+
+                // If a webhook URL is configured, send the data
+                if (GOOGLE_SHEETS_WEBHOOK_URL) {
+                    try {
+                        const res = await fetch(GOOGLE_SHEETS_WEBHOOK_URL, {
+                            method: 'POST',
+                            mode: 'no-cors', // needed for Google Apps Script
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify(data)
+                        });
+                        console.log('📤 Logged to Google Sheets (no-cors, check sheet)');
+                    } catch (e) {
+                        console.warn('⚠️  Google Sheets log failed:', e);
+                    }
+                } else {
+                    console.log('ℹ️  No Google Sheets webhook URL set. Data logged to console only.');
+                }
+            }
+
+            // =============================================================
+            // 10. UI — SCREEN MANAGEMENT
+            // =============================================================
+
+            // --- Welcome ---
+            startBtn.addEventListener('click', () => {
+                const name = studentNameInput.value.trim();
+                const id = studentIdInput.value.trim();
+                if (!name || !id) {
+                    flash('Please enter both your name and student ID.', 'error');
+                    return;
+                }
+                state.studentName = name;
+                state.studentId = id;
+                showScreen(scChoose);
+            });
+
+            // --- Choose ---
+            chooseGeneral.addEventListener('click', () => {
+                state.questionType = 'general';
+                state.sessionHistory = [];
+                state.usedIds = [];
+                showScreen(scSession);
+                loadSessionQuestion('general');
+            });
+            chooseSpecific.addEventListener('click', () => {
+                state.questionType = 'specific';
+                state.sessionHistory = [];
+                state.usedIds = [];
+                showScreen(scSession);
+                loadSessionQuestion('specific');
+            });
+            backFromChoose.addEventListener('click', () => {
+                showScreen(scWelcome);
+            });
+
+            // --- Session ---
+            playQuestionBtn.addEventListener('click', () => {
+                const text = questionEnglish.textContent;
+                if (text && text !== 'Loading…') {
+                    speakText(text, state.selectedVoiceGender, 0.8);
+                }
+            });
+
+            voiceMaleBtn.addEventListener('click', () => {
+                state.selectedVoiceGender = 'male';
+                voiceMaleBtn.classList.add('active', 'bg-blue-700', 'text-white');
+                voiceMaleBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                voiceFemaleBtn.classList.remove('active', 'bg-blue-700', 'text-white');
+                voiceFemaleBtn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+            voiceFemaleBtn.addEventListener('click', () => {
+                state.selectedVoiceGender = 'female';
+                voiceFemaleBtn.classList.add('active', 'bg-blue-700', 'text-white');
+                voiceFemaleBtn.classList.remove('bg-slate-100', 'text-slate-600');
+                voiceMaleBtn.classList.remove('active', 'bg-blue-700', 'text-white');
+                voiceMaleBtn.classList.add('bg-slate-100', 'text-slate-600');
+            });
+
+            // mode toggle
+            modeKeywords.addEventListener('click', () => {
+                answerTextarea.classList.remove('hidden');
+                voiceInputArea.classList.add('hidden');
+                modeKeywords.classList.add('bg-blue-700', 'text-white');
+                modeKeywords.classList.remove('bg-slate-100', 'text-slate-600');
+                modeVoice.classList.remove('bg-blue-700', 'text-white');
+                modeVoice.classList.add('bg-slate-100', 'text-slate-600');
+                if (state.isRecording) stopVoiceRecording();
+            });
+            modeVoice.addEventListener('click', () => {
+                answerTextarea.classList.add('hidden');
+                voiceInputArea.classList.remove('hidden');
+                modeVoice.classList.add('bg-blue-700', 'text-white');
+                modeVoice.classList.remove('bg-slate-100', 'text-slate-600');
+                modeKeywords.classList.remove('bg-blue-700', 'text-white');
+                modeKeywords.classList.add('bg-slate-100', 'text-slate-600');
+            });
+
+            startRecordingBtn.addEventListener('click', () => {
+                if (state.isRecording) {
+                    stopVoiceRecording();
+                } else {
+                    startVoiceRecording();
+                }
+            });
+
+            // Submit
+            submitAnswerBtn.addEventListener('click', async () => {
+                const q = state.currentQuestion;
+                if (!q) { flash('No question loaded.', 'error'); return; }
+
+                // get answer text
+                let answer = '';
+                const keywordsMode = !answerTextarea.classList.contains('hidden');
+                if (keywordsMode) {
+                    answer = answerTextarea.value.trim();
+                } else {
+                    answer = voiceTranscript.value.trim();
+                }
+                if (!answer) {
+                    flash('Please provide an answer before submitting.', 'error');
+                    return;
+                }
+
+                // disable submit
+                submitAnswerBtn.disabled = true;
+                submitAnswerBtn.innerHTML = '<div class="spinner"></div> Analyzing…';
+
+                // show feedback screen with loading
+                showScreen(scFeedback);
+                feedbackLoading.classList.remove('hidden');
+                feedbackContent.classList.add('hidden');
+                logConfirm.classList.add('hidden');
+
+                try {
+                    // parallel: AI feedback + logging
+                    const [feedback] = await Promise.all([
+                        fetchAIFeedback(q.english, answer),
+                        // log in background (fire and forget)
+                        logStudentData({
+                            timestamp: new Date().toISOString(),
+                            studentName: state.studentName,
+                            studentId: state.studentId,
+                            questionType: state.questionType,
+                            questionText: q.english,
+                            studentAnswer: answer,
+                            aiFeedback: 'pending…', // will update after AI
+                            sampleAnswer: 'pending…'
+                        }).catch(e => console.warn('Log issue:', e))
+                    ]);
+
+                    state.feedbackData = feedback;
+
+                    // display feedback
+                    feedbackEvaluation.textContent = feedback.evaluation;
+                    feedbackImprovement.textContent = feedback.improvement;
+                    feedbackSample.textContent = feedback.sample;
+
+                    feedbackLoading.classList.add('hidden');
+                    feedbackContent.classList.remove('hidden');
+                    logConfirm.classList.remove('hidden');
+
+                    // re-log with actual feedback
+                    logStudentData({
+                        timestamp: new Date().toISOString(),
+                        studentName: state.studentName,
+                        studentId: state.studentId,
+                        questionType: state.questionType,
+                        questionText: q.english,
+                        studentAnswer: answer,
+                        aiFeedback: feedback.evaluation + ' | ' + feedback.improvement,
+                        sampleAnswer: feedback.sample
+                    }).catch(e => console.warn('Log issue:', e));
+
+                    // enable next question
+                    nextQuestionBtn.disabled = false;
+
+                } catch (err) {
+                    flash('Error getting feedback: ' + err.message, 'error');
+                    submitAnswerBtn.disabled = false;
+                    submitAnswerBtn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Answer';
+                    // go back to session
+                    showScreen(scSession);
+                }
+            });
+
+            // Next question
+            nextQuestionBtn.addEventListener('click', () => {
+                showScreen(scSession);
+                loadSessionQuestion(state.questionType);
+            });
+
+            // Retry same question
+            feedbackRetryBtn.addEventListener('click', () => {
+                showScreen(scSession);
+                // reload same question
+                const q = state.currentQuestion;
+                if (q) {
+                    questionEnglish.textContent = q.english;
+                    questionChinese.textContent = q.chinese;
+                    questionTag.textContent = '🏷️ ' + q.tag;
+                    answerTextarea.value = '';
+                    voiceTranscript.value = '';
+                    if (state.isRecording) stopVoiceRecording();
+                    submitAnswerBtn.disabled = false;
+                    nextQuestionBtn.disabled = true;
+                    feedbackContent.classList.add('hidden');
+                    feedbackLoading.classList.remove('hidden');
+                }
+            });
+
+            feedbackNextBtn.addEventListener('click', () => {
+                showScreen(scSession);
+                loadSessionQuestion(state.questionType);
+            });
+
+            feedbackBackTopics.addEventListener('click', () => {
+                showScreen(scChoose);
+            });
+
+            backFromSession.addEventListener('click', () => {
+                if (state.isRecording) stopVoiceRecording();
+                showScreen(scChoose);
+            });
+
+            // --- Teacher Login ---
+            teacherLoginBtn.addEventListener('click', () => {
+                showScreen(scTeacherLogin);
+            });
+            backFromTeacherLogin.addEventListener('click', () => {
+                showScreen(scWelcome);
+            });
+
+            adminLoginBtn.addEventListener('click', () => {
+                const pw = adminPassword.value.trim();
+                if (pw === 'Admin123') {
+                    state.isAdmin = true;
+                    showScreen(scTeacherDashboard);
+                    renderQuestionList('general');
+                    flash('Welcome, Teacher!', 'success');
+                    adminPassword.value = '';
+                } else {
+                    flash('Incorrect password. Try Admin123', 'error');
+                }
+            });
+
+            // --- Teacher Dashboard ---
+            adminLogoutBtn.addEventListener('click', () => {
+                state.isAdmin = false;
+                showScreen(scWelcome);
+                flash('Logged out.', 'info');
+            });
+
+            // API Key
+            const savedKey = getApiKey();
+            if (savedKey) apiKeyInput.value = savedKey;
+
+            saveApiKeyBtn.addEventListener('click', () => {
+                const key = apiKeyInput.value.trim();
+                if (!key) { flash('Please enter an API key.', 'error'); return; }
+                saveApiKey(key);
+                flash('API key saved locally.', 'success');
+            });
+
+            // Tabs
+            let currentTab = 'general';
+            tabGeneral.addEventListener('click', () => {
+                currentTab = 'general';
+                tabGeneral.classList.add('text-blue-700', 'border-blue-700');
+                tabGeneral.classList.remove('text-slate-500');
+                tabSpecific.classList.remove('text-blue-700', 'border-blue-700');
+                tabSpecific.classList.add('text-slate-500');
+                renderQuestionList('general');
+            });
+            tabSpecific.addEventListener('click', () => {
+                currentTab = 'specific';
+                tabSpecific.classList.add('text-blue-700', 'border-blue-700');
+                tabSpecific.classList.remove('text-slate-500');
+                tabGeneral.classList.remove('text-blue-700', 'border-blue-700');
+                tabGeneral.classList.add('text-slate-500');
+                renderQuestionList('specific');
+            });
+
+            function renderQuestionList(type) {
+                const qs = getQuestions(type);
+                if (!qs.length) {
+                    questionList.innerHTML =
+                        `<p class="text-sm text-slate-400 italic">No questions yet. Add one below.</p>`;
+                    return;
+                }
+                let html = '';
+                qs.forEach((q, idx) => {
+                    html += `
+                <div class="flex items-start justify-between bg-slate-50 rounded-xl px-4 py-3 border border-slate-100 gap-3">
+                  <div class="flex-1 min-w-0">
+                    <p class="text-sm font-medium text-slate-800">${escapeHtml(q.english)}</p>
+                    <p class="text-xs text-slate-400 mt-0.5">${escapeHtml(q.chinese)}</p>
+                    <span class="inline-block mt-1 text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">${escapeHtml(q.tag)}</span>
+                  </div>
+                  <button data-type="${type}" data-id="${q.id}" class="delete-q-btn text-red-400 hover:text-red-600 transition text-sm p-1">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              `;
+                });
+                questionList.innerHTML = html;
+                // attach delete events
+                document.querySelectorAll('.delete-q-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const type = btn.dataset.type;
+                        const id = btn.dataset.id;
+                        deleteQuestion(type, id);
+                    });
+                });
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            function deleteQuestion(type, id) {
+                let qs = getQuestions(type);
+                qs = qs.filter(q => q.id !== id);
+                setAllQuestions(type, qs);
+                renderQuestionList(type);
+                flash('Question deleted.', 'info');
+            }
+
+            // Add question
+            addQuestionBtn.addEventListener('click', () => {
+                const eng = newEnglish.value.trim();
+                const chn = newChinese.value.trim();
+                const tag = newTag.value.trim();
+                if (!eng || !chn || !tag) {
+                    flash('Please fill in all fields.', 'error');
+                    return;
+                }
+                const type = currentTab;
+                let qs = getQuestions(type);
+                qs.push({
+                    id: genId(),
+                    english: eng,
+                    chinese: chn,
+                    tag: tag
+                });
+                setAllQuestions(type, qs);
+                renderQuestionList(type);
+                newEnglish.value = '';
+                newChinese.value = '';
+                newTag.value = '';
+                flash('Question added!', 'success');
+            });
+
+            // =============================================================
+            // 11. SAMPLE ANSWER TTS (feedback screen)
+            // =================================
+$$
